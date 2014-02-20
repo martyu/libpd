@@ -24,12 +24,7 @@ typedef enum PdAudioStatus {
  * The returned PdAudioStatus is used to indicate success, failure, or
  * that parameters had to be adjusted in order to work.
  */
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 60000
-@interface PdAudioController : NSObject
-#else
-// AVAudioSessionDelegate is deprecated starting in iOS 6
-@interface PdAudioController : NSObject	<AVAudioSessionDelegate>
-#endif
+@interface PdAudioController : NSObject <AVAudioSessionDelegate>
 
 // Read only properties that are set by the configure methods
 @property (nonatomic, readonly) int sampleRate;
@@ -37,6 +32,7 @@ typedef enum PdAudioStatus {
 @property (nonatomic, readonly) BOOL inputEnabled;
 @property (nonatomic, readonly) BOOL mixingEnabled;
 @property (nonatomic, readonly) int ticksPerBuffer;
+@property (nonatomic) float sinPhase;
 
 // Check or set the active status of the audio unit
 @property (nonatomic, getter=isActive) BOOL active;
@@ -49,7 +45,8 @@ typedef enum PdAudioStatus {
 - (PdAudioStatus)configurePlaybackWithSampleRate:(int)sampleRate
                                   numberChannels:(int)numChannels
                                     inputEnabled:(BOOL)inputEnabled
-                                   mixingEnabled:(BOOL)mixingEnabled;
+                                   mixingEnabled:(BOOL)mixingEnabled
+										callback:(AURenderCallback)callback;
 
 // Configure audio for ambient use, without input channels.  Specifying mixingEnabled = YES will allow the app to continue
 // playing audio along with other apps (such as iPod music player).
