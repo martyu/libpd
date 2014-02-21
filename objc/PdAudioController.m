@@ -110,7 +110,7 @@
 - (PdAudioStatus)configureAudioUnitWithNumberChannels:(int)numChannels inputEnabled:(BOOL)inputEnabled callback:(AURenderCallback)callback {
     inputEnabled_ = inputEnabled;
     numberChannels_ = numChannels;
-
+	
 	return [self.audioUnit configureWithSampleRate:self.sampleRate numberChannels:numChannels inputEnabled:inputEnabled callback:callback] ? PdAudioError : PdAudioOK;
 }
 

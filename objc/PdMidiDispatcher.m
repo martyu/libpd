@@ -55,7 +55,7 @@
 
 - (void)receiveNoteOn:(int)pitch withVelocity:(int)velocity forChannel:(int)channel {
   NSArray *listeners = [listenerMap objectForKey:[NSNumber numberWithInt:channel]];
-  for (NSObject<PdMidiListener> *listener in listeners) {
+  for (NSObject<PdListener> *listener in listeners) {
   if ([listener respondsToSelector:@selector(receiveNoteOn:pitch:velocity:)]) {
       [listener receiveNoteOn:pitch withVelocity:velocity forChannel:channel];
     } else {
@@ -66,7 +66,7 @@
 
 - (void)receiveControlChange:(int)value forController:(int)controller forChannel:(int)channel {
   NSArray *listeners = [listenerMap objectForKey:[NSNumber numberWithInt:channel]];
-  for (NSObject<PdMidiListener> *listener in listeners) {
+  for (NSObject<PdListener> *listener in listeners) {
 	if ([listener respondsToSelector:@selector(receiveControlChange:controller:value:)]) {
       [listener receiveControlChange:value forController:controller forChannel:channel];
     } else {
@@ -77,7 +77,7 @@
 
 - (void)receiveProgramChange:(int)value forChannel:(int)channel {
   NSArray *listeners = [listenerMap objectForKey:[NSNumber numberWithInt:channel]];
-  for (NSObject<PdMidiListener> *listener in listeners) {
+  for (NSObject<PdListener> *listener in listeners) {
     if ([listener respondsToSelector:@selector(receiveProgramChange:value:)]) {
       [listener receiveProgramChange:value forChannel:channel];
     } else {
@@ -88,7 +88,7 @@
 
 - (void)receivePitchBend:(int)value forChannel:(int)channel {
   NSArray *listeners = [listenerMap objectForKey:[NSNumber numberWithInt:channel]];
-  for (NSObject<PdMidiListener> *listener in listeners) {
+  for (NSObject<PdListener> *listener in listeners) {
   if ([listener respondsToSelector:@selector(receivePitchBend:value:)]) {
       [listener receivePitchBend:value forChannel:channel];
     } else {
@@ -99,7 +99,7 @@
 
 - (void)receiveAftertouch:(int)value forChannel:(int)channel {
   NSArray *listeners = [listenerMap objectForKey:[NSNumber numberWithInt:channel]];
-  for (NSObject<PdMidiListener> *listener in listeners) {
+  for (NSObject<PdListener> *listener in listeners) {
   if ([listener respondsToSelector:@selector(receiveAftertouch:value:)]) {
       [listener receiveAftertouch:value forChannel:channel];
     } else {
@@ -110,7 +110,7 @@
 
 - (void)receivePolyAftertouch:(int)value forPitch:(int)pitch forChannel:(int)channel {
   NSArray *listeners = [listenerMap objectForKey:[NSNumber numberWithInt:channel]];
-  for (NSObject<PdMidiListener> *listener in listeners) {
+  for (NSObject<PdListener> *listener in listeners) {
     if ([listener respondsToSelector:@selector(receivePolyAftertouch:pitch:value:)]) {
       [listener receivePolyAftertouch:value forPitch:pitch forChannel:channel];
     } else {

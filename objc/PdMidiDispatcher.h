@@ -17,15 +17,15 @@
 //
 // Raw MIDI bytes are only printed by default; subclass and override the receiveMidiByte
 // method if you want to handle raw MIDI aka data sent to [midiout].
-@interface PdMidiDispatcher : NSObject<PdMidiReceiverDelegate> {
+@interface PdMidiDispatcher : NSObject<PdReceiverDelegate> {
   NSMutableDictionary *listenerMap;
 }
 
 // Adds a listener for the given MIDI channel in Pd.
-- (int)addListener:(NSObject<PdMidiListener> *)listener forChannel:(int)channel;
+- (int)addListener:(NSObject<PdListener> *)listener forChannel:(int)channel;
 
 // Removes a listener for a channel.
-- (int)removeListener:(NSObject<PdMidiListener> *)listener forChannel:(int)channel;
+- (int)removeListener:(NSObject<PdListener> *)listener forChannel:(int)channel;
 
 // Removes all listeners.
 - (void)removeAllListeners;

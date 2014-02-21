@@ -30,7 +30,8 @@
 // recreated at the same time.  This is an expensive process and will stop the audio unit
 // before any reconstruction, causing a momentary pause in audio and UI if
 // run from the main thread.  Returns zero on success.
-- (int)configureWithSampleRate:(Float64)sampleRate numberChannels:(int)numChannels inputEnabled:(BOOL)inputEnabled;
+- (int)configureWithSampleRate:(Float64)sampleRate numberChannels:(int)numChannels;
+- (int)configureWithSampleRate:(Float64)sampleRate numberChannels:(int)numChannels inputEnabled:(BOOL)inputEnabled callback:(AURenderCallback)callback;
 
 // Print info on the audio unit settings to the console
 - (void)print;

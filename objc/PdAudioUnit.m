@@ -23,6 +23,8 @@ static const AudioUnitElement kOutputElement = 0;
 	int blockSizeAsLog_;
 }
 
+@property (nonatomic) AURenderCallback callback;
+
 - (BOOL)initAudioUnitWithSampleRate:(Float64)sampleRate numberChannels:(int)numChannels inputEnabled:(BOOL)inputEnabled;
 - (void)destroyAudioUnit;
 - (AudioComponentDescription)ioDescription;
@@ -54,9 +56,16 @@ static const AudioUnitElement kOutputElement = 0;
 
 #pragma mark - Public Methods
 
-- (int)configureWithSampleRate:(Float64)sampleRate numberChannels:(int)numChannels inputEnabled:(BOOL)inputEnabled {
+- (int)configureWithSampleRate:(Float64)sampleRate numberChannels:(int)numChannels
+{
+	return [self configureWithSampleRate:sampleRate numberChannels:numChannels inputEnabled:NO callback:nil];
+}
+
+- (int)configureWithSampleRate:(Float64)sampleRate numberChannels:(int)numChannels inputEnabled:(BOOL)inputEnabled callback:(AURenderCallback)callback {
 	Boolean wasActive = self.isActive;
     inputEnabled_ = inputEnabled;
+	_callback = callback;
+	
 	if (![self initAudioUnitWithSampleRate:sampleRate numberChannels:numChannels inputEnabled:inputEnabled_]) {
         return -1;
     }
@@ -83,24 +92,24 @@ static const AudioUnitElement kOutputElement = 0;
 
 #pragma mark - AURenderCallback
 
-static OSStatus AudioRenderCallback(void *inRefCon,
-									AudioUnitRenderActionFlags *ioActionFlags,
-									const AudioTimeStamp *inTimeStamp,
-									UInt32 inBusNumber,
-									UInt32 inNumberFrames,
-									AudioBufferList *ioData) {
-	
-	PdAudioUnit *pdAudioUnit = (PdAudioUnit *)inRefCon;
-	Float32 *auBuffer = (Float32 *)ioData->mBuffers[0].mData;
-    
-	if (pdAudioUnit->inputEnabled_) {
-		AudioUnitRender(pdAudioUnit->audioUnit_, ioActionFlags, inTimeStamp, kInputElement, inNumberFrames, ioData);
-	}
-    
-	int ticks = inNumberFrames >> pdAudioUnit->blockSizeAsLog_; // this is a faster way of computing (inNumberFrames / blockSize)
-	[PdBase processFloatWithInputBuffer:auBuffer outputBuffer:auBuffer ticks:ticks];
-	return noErr;
-}
+//static OSStatus AudioRenderCallback(void *inRefCon,
+//									AudioUnitRenderActionFlags *ioActionFlags,
+//									const AudioTimeStamp *inTimeStamp,
+//									UInt32 inBusNumber,
+//									UInt32 inNumberFrames,
+//									AudioBufferList *ioData) {
+//	
+//	PdAudioUnit *pdAudioUnit = (PdAudioUnit *)inRefCon;
+//	Float32 *auBuffer = (Float32 *)ioData->mBuffers[0].mData;
+//    
+//	if (pdAudioUnit->inputEnabled_) {
+//		AudioUnitRender(pdAudioUnit->audioUnit_, ioActionFlags, inTimeStamp, kInputElement, inNumberFrames, ioData);
+//	}
+//    
+//	int ticks = inNumberFrames >> pdAudioUnit->blockSizeAsLog_; // this is a faster way of computing (inNumberFrames / blockSize)
+//	[PdBase processFloatWithInputBuffer:auBuffer outputBuffer:auBuffer ticks:ticks];
+//	return noErr;
+//}
 
 #pragma mark - Private
 
@@ -147,7 +156,7 @@ static OSStatus AudioRenderCallback(void *inRefCon,
                                                   sizeof(streamDescription)));
 	
 	AURenderCallbackStruct callbackStruct;
-	callbackStruct.inputProc = AudioRenderCallback;
+	callbackStruct.inputProc = _callback;
 	callbackStruct.inputProcRefCon = self;
 	AU_RETURN_FALSE_IF_ERROR(AudioUnitSetProperty(audioUnit_,
                                                   kAudioUnitProperty_SetRenderCallback,
